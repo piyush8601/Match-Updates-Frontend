@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { fetchMatches } from "../../api/matches";
-import { Match, LoadingState } from "@/common";
+import { Match, LoadingState } from "@/common/interfaces";
+import './matches-page.css';
 
 export default function MatchesPage(): React.JSX.Element {
     const router = useRouter();
@@ -20,7 +21,6 @@ export default function MatchesPage(): React.JSX.Element {
             try {
                 setState({ loading: true, error: null });
                 const data = await fetchMatches();
-                console.log(data);
                 if (Array.isArray(data)) {
                     setMatches(data);
                     setState({ loading: false, error: null });
@@ -49,35 +49,35 @@ export default function MatchesPage(): React.JSX.Element {
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-50">
+        <div className="matches-page">
             <Navbar />
-            <main className="flex-1">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <div className="flex justify-between items-center mb-8">
-                        <h1 className="text-3xl font-bold text-gray-900">All Matches</h1>
+            <main className="matches-page__main">
+                <div className="matches-page__container">
+                    <div className="matches-page__header">
+                        <h1 className="matches-page__title">All Matches</h1>
                         <button
                             onClick={handleCreateMatch}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors"
+                            className="matches-page__create-button"
                         >
                             Create New Match
                         </button>
                     </div>
 
                     {state.loading && (
-                        <div className="flex justify-center items-center py-12">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                            <span className="ml-3 text-gray-600">Loading matches...</span>
+                        <div className="matches-page__loading-container">
+                            <div className="matches-page__spinner"></div>
+                            <span className="matches-page__loading-text">Loading matches...</span>
                         </div>
                     )}
 
                     {state.error && (
-                        <div className="text-center py-12">
-                            <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
-                                <p className="text-red-600 font-medium">Error loading matches</p>
-                                <p className="text-red-500 text-sm mt-2">{state.error}</p>
+                        <div className="matches-page__error-container">
+                            <div className="matches-page__error-box">
+                                <p className="matches-page__error-title">Error loading matches</p>
+                                <p className="matches-page__error-message">{state.error}</p>
                                 <button
                                     onClick={() => window.location.reload()}
-                                    className="mt-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm transition-colors"
+                                    className="matches-page__error-button"
                                 >
                                     Try Again
                                 </button>
@@ -86,13 +86,13 @@ export default function MatchesPage(): React.JSX.Element {
                     )}
 
                     {!state.loading && !state.error && matches.length === 0 && (
-                        <div className="text-center py-12">
-                            <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 max-w-md mx-auto">
-                                <p className="text-gray-500 text-lg mb-4">No matches found</p>
-                                <p className="text-gray-400 text-sm mb-6">Start a new match to get started!</p>
+                        <div className="matches-page__no-matches-container">
+                            <div className="matches-page__no-matches-box">
+                                <p className="matches-page__no-matches-text">No matches found</p>
+                                <p className="matches-page__no-matches-subtext">Start a new match to get started!</p>
                                 <button
                                     onClick={handleCreateMatch}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors"
+                                    className="matches-page__create-button"
                                 >
                                     Create New Match
                                 </button>
@@ -101,47 +101,47 @@ export default function MatchesPage(): React.JSX.Element {
                     )}
 
                     {!state.loading && !state.error && matches.length > 0 && (
-                        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        <div className="matches-page__grid">
                             {matches.map((match) => (
                                 <div
                                     key={match._id}
-                                    className="bg-white hover:bg-gray-50 transition-colors cursor-pointer rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md"
+                                    className="matches-page__match-card"
                                     onClick={() => handleMatchClick(match._id)}
                                 >
-                                    <div className="flex justify-between items-start mb-4">
-                                        <h3 className="font-semibold text-gray-900">
+                                    <div className="matches-page__match-header">
+                                        <h3 className="matches-page__match-title">
                                             Match #{String(match.matchId).padStart(4, "0")}
                                         </h3>
-                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${match.status === 'ongoing' ? 'bg-green-100 text-green-800' :
-                                            match.status === 'paused' ? 'bg-yellow-100 text-yellow-800' :
-                                                match.status === 'completed' ? 'bg-gray-100 text-gray-800' :
-                                                    'bg-blue-100 text-blue-800'
+                                        <span className={`matches-page__status-badge ${match.status === 'ongoing' ? 'matches-page__status-ongoing' :
+                                            match.status === 'paused' ? 'matches-page__status-paused' :
+                                                match.status === 'completed' ? 'matches-page__status-completed' :
+                                                    'matches-page__status-default'
                                             }`}>
                                             {match.status.replace(/_/g, " ")}
                                         </span>
                                     </div>
 
-                                    <div className="space-y-3">
-                                        <div className="text-center">
-                                            <p className="text-lg font-semibold text-gray-900">
+                                    <div className="matches-page__match-info">
+                                        <div className="matches-page__text-center">
+                                            <p className="matches-page__match-teams">
                                                 {match.teamA.name} vs {match.teamB.name}
                                             </p>
                                             {match.venue && (
-                                                <p className="text-sm text-gray-500 mt-1">{match.venue}</p>
+                                                <p className="matches-page__match-venue">{match.venue}</p>
                                             )}
                                         </div>
 
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-gray-600">
+                                        <div className="matches-page__score-info">
+                                            <span className="matches-page__team-score">
                                                 {match.teamA.name}: {match.teamAScore}/{match.teamAWickets}
                                             </span>
-                                            <span className="text-gray-600">
+                                            <span className="matches-page__team-score">
                                                 {match.teamB.name}: {match.teamBScore}/{match.teamBWickets}
                                             </span>
                                         </div>
 
                                         {match.status === 'ongoing' && (
-                                            <div className="text-center text-sm text-blue-600 font-medium">
+                                            <div className="matches-page__ongoing-info">
                                                 Over: {match.currentOver}.{match.currentBall}
                                             </div>
                                         )}
@@ -155,4 +155,4 @@ export default function MatchesPage(): React.JSX.Element {
             <Footer />
         </div>
     );
-} 
+}

@@ -1,30 +1,8 @@
-import { Commentary, Match } from '@/common';
+import { ApiResponse, Commentary, CreateCommentaryData, CreateMatchData, Match } from '@/common/interfaces';
 import axios, { AxiosResponse } from 'axios';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
-// API Response types
-interface ApiResponse<T> {
-  statusCode: number;
-  message: string;
-  data: T;
-}
-
-// Create match data type
-export interface CreateMatchData {
-  teamA: {
-    name: string;
-    players: string[];
-  };
-  teamB: {
-    name: string;
-    players: string[];
-  };
-  overs: number;
-  venue?: string;
-}
-
-// Fetch list of all matches
 export async function fetchMatches(): Promise<Match[]> {
   try {
     const response: AxiosResponse<ApiResponse<Match[]>> = await axios.get(`${API_BASE_URL}/matches`);
@@ -35,7 +13,6 @@ export async function fetchMatches(): Promise<Match[]> {
   }
 }
 
-// Start a new match
 export async function startMatch(matchData: CreateMatchData): Promise<Match> {
   try {
     const response: AxiosResponse<ApiResponse<Match>> = await axios.post(
@@ -49,8 +26,7 @@ export async function startMatch(matchData: CreateMatchData): Promise<Match> {
   }
 }
 
-// Add commentary to a match
-export async function addCommentary(matchId: string, commentaryData: Omit<Commentary, '_id' | 'timestamp'>): Promise<Commentary> {
+export async function addCommentary(matchId: string, commentaryData: CreateCommentaryData): Promise<Commentary> {
   try {
     const response: AxiosResponse<ApiResponse<Commentary>> = await axios.post(
       `${API_BASE_URL}/matches/${matchId}/commentary`,
@@ -63,7 +39,6 @@ export async function addCommentary(matchId: string, commentaryData: Omit<Commen
   }
 }
 
-// Get match details including commentary
 export async function getMatchDetails(matchId: string): Promise<Match> {
   try {
     const response: AxiosResponse<ApiResponse<Match>> = await axios.get(`${API_BASE_URL}/matches/${matchId}`);
@@ -74,7 +49,6 @@ export async function getMatchDetails(matchId: string): Promise<Match> {
   }
 }
 
-// Pause a match
 export async function pauseMatch(matchId: string): Promise<Match> {
   try {
     const response: AxiosResponse<ApiResponse<Match>> = await axios.post(`${API_BASE_URL}/matches/${matchId}/pause`);
@@ -85,7 +59,6 @@ export async function pauseMatch(matchId: string): Promise<Match> {
   }
 }
 
-// Resume a match
 export async function resumeMatch(matchId: string): Promise<Match> {
   try {
     const response: AxiosResponse<ApiResponse<Match>> = await axios.post(`${API_BASE_URL}/matches/${matchId}/resume`);
@@ -95,3 +68,4 @@ export async function resumeMatch(matchId: string): Promise<Match> {
     throw new Error('Failed to resume match');
   }
 }
+

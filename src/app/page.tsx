@@ -6,7 +6,8 @@ import Hero from "../components/Hero";
 import MatchesList from "../components/MatchesList";
 import Footer from "../components/Footer";
 import { fetchMatches } from "../api/matches";
-import { Match, LoadingState } from "@/common";
+import { Match, LoadingState } from "@/common/interfaces";
+import "./page.css";
 
 export default function HomePage(): React.JSX.Element {
   const [matches, setMatches] = useState<Match[]>([]);
@@ -20,18 +21,21 @@ export default function HomePage(): React.JSX.Element {
       try {
         setState({ loading: true, error: null });
         const data = await fetchMatches();
-        console.log(data);
         if (Array.isArray(data)) {
           setMatches(data);
         } else {
-          console.error('Invalid data format received:', data);
-          setState({ loading: false, error: 'Invalid data format received for matches.' });
+          console.error("Invalid data format received:", data);
+          setState({
+            loading: false,
+            error: "Invalid data format received for matches.",
+          });
         }
       } catch (error) {
-        console.error('Error loading matches:', error);
+        console.error("Error loading matches:", error);
         setState({
           loading: false,
-          error: error instanceof Error ? error.message : 'Failed to load matches.'
+          error:
+            error instanceof Error ? error.message : "Failed to load matches.",
         });
       }
     };
@@ -40,11 +44,11 @@ export default function HomePage(): React.JSX.Element {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="home-container">
       <Navbar />
-      <main className="flex-1">
+      <main className="home-main">
         <Hero />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="matches-container">
           <MatchesList
             matches={matches}
             loading={state.loading}
